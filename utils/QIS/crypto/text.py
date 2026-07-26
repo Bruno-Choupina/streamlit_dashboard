@@ -1,63 +1,82 @@
+st.title("Bruno Quant App")
+st.header("Quantitative Finance Projects")
+
+st.subheader("About Me")
+
+st.write("""
+I am currently pursuing the MSc 272 *Economics and Finance* at
+Université Paris Dauphine–PSL and completing the first internship of my
+gap year at TotalEnergies as a **Short-Term Power Middle Office
+Analyst**.
+
+This platform showcases my quantitative finance projects, combining
+personal research with interactive educational tools inspired by the
+concepts studied throughout my master's program.
+
+Its objective is both to present the results of my quantitative
+research and to provide hands-on applications of financial concepts
+through interactive visualizations, simulations and quantitative
+models."""
+
+
+about_me="""
+
+## Bruno Quant App
+
+### Quantitative Finance Projects
+
+### About Me
+
+I am currently pursuing the MSc 272 *Economics and Finance* at
+Université Paris Dauphine–PSL and completing the first internship of my
+gap year at TotalEnergies as a **Short-Term Power Middle Office
+Analyst**.
+
+This platform showcases my quantitative finance projects, combining
+personal research with interactive educational tools inspired by the
+concepts studied throughout my master's program.
+
+Its objective is both to present the results of my quantitative
+research and to provide hands-on applications of financial concepts
+through interactive visualizations, simulations and quantitative
+models.
+
+"""
+
 
 project_overview="""
 
-The starting point of this project is the observation that
-cryptocurrency markets tend to evolve through pronounced market cycles.
-Strong bull markets are often preceded by long accumulation phases,
-during which prices remain relatively stable, before entering periods
-of rapid appreciation. These expansion phases are generally followed by
-significant corrections that retrace a large part of the previous
-upward movement.
+Cryptocurrency markets tend to evolve through pronounced market cycles.
+Long accumulation phases, characterized by relatively stable prices,
+are often followed by strong bull markets, while periods of excessive
+optimism frequently precede major corrections.
 
-Based on this observation, the objective of this project was to design
-a systematic investment strategy capable of identifying these different
-market regimes. More specifically, the strategy attempts to detect
-accumulation phases that may offer attractive buying opportunities,
-while also identifying periods of excessive optimism that could signal
-the end of a bullish trend and justify exiting the market.
-
-To achieve this, several quantitative indicators were developed from
-historical price data. These indicators are combined to generate
-objective buy and sell signals, which are then evaluated through
+This project aims to identify these market regimes using quantitative
+indicators derived exclusively from historical price data.
+Buy and sell signals are generated objectively and evaluated through
 historical backtesting.
 
-Since each indicator depends on several parameters, an important part
-of the project consists of determining which parameter combinations
-produce the most relevant trading signals. Beyond simply evaluating a
-trading strategy, this project therefore represents a quantitative
-research framework whose objective is to identify historically robust
-parameter configurations that may later support future investment
-decisions.
-
-This application presents the first version of the project (V0). 
-It allows users to interactively configure the strategy parameters 
-and investment universe, execute a historical backtest, 
-and explore how these choices influence the historical performance of the strategy.
-Future versions will extend both the trading logic and the portfolio management methodology.
+This application provides an interactive environment to configure the
+strategy parameters and investment universe, run historical backtests,
+analyze the generated trades, and compare different parameter
+configurations. Future versions will extend both the trading logic and
+the portfolio management methodology.
 
 ##### Application Structure
 
-Throughout this page, you will discover each stage of the project's
-methodology:
+This application is organized into four main sections:
 
-- **Strategy Parameters**  
-  Explore the indicators used to generate buy and sell signals,
-  understand the intuition behind each of them, and interactively
-  modify their parameters.
+- **Strategy Parameters** — Understand the buy and sell indicators and
+  configure their parameters.
 
-- **Investment Universe**  
-  Select the cryptocurrency universe used during the backtest and
-  understand how the choice of assets can influence the results.
+- **Investment Universe** — Select the cryptocurrency universe used for
+  the backtest.
 
-- **Backtesting**  
-    Understand the assumptions of the historical backtesting methodology, 
-    execute the strategy using the selected parameters, analyze the resulting performance statistics, 
-    and inspect the individual trades generated throughout the simulation.
+- **Backtesting** — Run the strategy, analyze the results, and inspect
+  the generated trades.
 
-- **Strategy Optimization**  
-  Discover how different objective functions are used to optimize the
-  strategy parameters, compare the resulting optimal configurations,
-  and evaluate their impact on the overall performance.
+- **Strategy Optimization** — Compare parameter configurations obtained
+  with different optimization objectives.
 
 """
 
@@ -130,31 +149,28 @@ even if the other accumulation indicators are satisfied.
 """
 
 all_buy_indicators="""
-##### Price volatility
+##### Price Volatility
 
-Periods of accumulation are often characterized by relatively stable price
-movements and reduced market activity. The objective of this indicator is to
-identify assets whose volatility has become unusually low relative to their
-own historical behaviour.
+Periods of accumulation are often characterized by relatively stable
+price movements. This indicator identifies assets whose volatility is
+unusually low relative to their historical behaviour.
 
-The rolling standard deviation of the closing price is computed over the
-selected **Rolling Window** and compared with its historical distribution
-over the selected **Historical Window**. The **Lower Volatility Quantile**
-defines the threshold below which volatility is considered unusually low.
-For example, a value of 0.10 means that the signal is triggered only when
-the current rolling volatility belongs to the lowest 10% of historical
-observations within the selected Historical Window.
+- **Rolling Window** defines the period used to compute rolling
+  volatility.
+- **Historical Window** defines the rolling historical period used to
+  compute the volatility quantiles.
+- **Lower Volatility Quantile** sets the threshold below which volatility
+  is considered unusually low.
 
-**Buy condition:** Current rolling volatility < historical lower volatility quantile.
+**Buy condition:** Rolling Volatility < Lower Historical Volatility
+Quantile.
 
 ---
+
 ##### Relative Trading Range
 
-This indicator aims to identify periods during which an asset has been
-trading within an unusually narrow price range, which often
-characterizes accumulation phases. For each date, the highest and lowest closing prices observed over the
-preceding **Rolling Window** are first identified. Their relative
-difference is then computed as:
+Accumulation phases are also characterized by prices fluctuating within
+an unusually narrow range. This indicator is computed as:
 
 $$
 \\text{Relative Trading Range}
@@ -163,36 +179,32 @@ $$
 {\\text{Lowest Price}}
 $$
 
-A low value indicates that the asset has experienced little price
-dispersion over the selected period, whereas larger values correspond
-to wider price fluctuations. To reduce the influence of temporary price movements, a **Moving
-Average** of the relative trading range is computed over the selected
-**Moving Average Window**. This moving average is then compared with
-the historical distribution of the relative trading range computed over
-the preceding **Historical Window**. The **Lower Trading Range
-Quantile** defines the threshold below which the recent trading range
-is considered unusually compressed.
+- **Rolling Window** defines the period used to identify the highest and
+  lowest closing prices included in the calculation.
+- **Moving Average Window** defines the period used to compute the moving
+  average of the Relative Trading Range.
+- **Historical Window** defines the rolling historical period used to
+  compute the trading range quantiles.
+- **Lower Trading Range Quantile** sets the threshold below which the
+  trading range is considered unusually compressed.
 
-**Buy condition:** Moving Average of Relative Trading Range
-< Rolling Lower Historical Quantile.
+**Buy condition:** Moving Average of Relative Trading Range < Lower
+Trading Range Quantile.
 
 ---
+
 ##### RSI Confirmation
 
-While the previous two indicators identify assets exhibiting
-characteristics of an accumulation phase, the Relative Strength Index
-(RSI) is used as a final confirmation filter. The Relative Strength Index (RSI) is a widely used momentum indicator
-that ranges from 0 to 100 and compares the magnitude of recent gains
-and losses. [Learn more about RSI](https://corporatefinanceinstitute.com/resources/career-map/sell-side/capital-markets/relative-strength-index-rsi/?utm_source=chatgpt.com)
+The Relative Strength Index (RSI) is used as a final confirmation filter
+to avoid buying assets that have already experienced a strong recent
+price increase. The RSI is computed over a fixed 14-week period and ranges from
+0 to 100. Unlike the previous indicators, it does not rely on historical
+quantiles. [Learn more about RSI](https://corporatefinanceinstitute.com/resources/career-map/sell-side/capital-markets/relative-strength-index-rsi/?utm_source=chatgpt.com)
 
-In this strategy, it is computed over the preceding
-14-day Window, and a buy signal is generated only if the RSI
-remains below the selected **RSI Buy Threshold**. Unlike the previous indicators, the RSI does not rely on historical
-quantiles. Instead, it prevents buying assets whose prices have already
-experienced an excessively strong upward movement over the recent past,
-even if the other accumulation indicators are satisfied.
+**RSI Buy Threshold** defines the maximum RSI value allowed to generate
+a buy signal.
 
-**Buy condition:** 14-day RSI < RSI Buy Threshold
+**Buy condition:** 14-week RSI < RSI Buy Threshold.
 
 """
 
@@ -245,48 +257,49 @@ all_sell_indicators="""
 
 ##### Return On Investment (ROI)
 
-The purpose of this indicator is to identify assets whose recent price
-appreciation has become unusually large compared to their own historical
-behaviour. For each date, the Return on Investment (ROI) is computed over the
-preceding **ROI Window** as the percentage price change observed during
-that period. Rather than using a fixed profit target, the current ROI is
-compared with its historical distribution computed over the preceding
-**Historical Window**. The **Upper ROI Quantile** defines the threshold
-above which the recent price appreciation is considered unusually high.
+This indicator identifies assets whose recent price appreciation has
+become unusually large relative to their historical behaviour.
 
-**Sell condition:** ROI > Upper ROI Quantile
+- **ROI Window** defines the period used to compute the recent Return On
+  Investment (ROI).
+- **Historical Window** defines the rolling historical period used to
+  compute the ROI quantiles.
+- **Upper ROI Quantile** sets the threshold above which recent price
+  appreciation is considered unusually high.
+
+**Sell condition:** ROI > Upper Historical ROI Quantile.
 
 ---
+
 ##### RSI Filter
 
-The Relative Strength Index (RSI) is a widely used momentum indicator
-that measures the strength of recent price movements.
-[Learn more about RSI](https://corporatefinanceinstitute.com/resources/career-map/sell-side/capital-markets/relative-strength-index-rsi/?utm_source=chatgpt.com).
+The Relative Strength Index (RSI) is used to identify periods during
+which upward momentum has become unusually strong. The RSI is computed over a fixed 14-week period and compared with its
+historical behaviour. [Learn more about RSI](https://corporatefinanceinstitute.com/resources/career-map/sell-side/capital-markets/relative-strength-index-rsi/?utm_source=chatgpt.com)
 
-In this strategy, the RSI is computed over the preceding **14-day
-Window** and compared with its historical distribution computed over
-the preceding **Historical Window**. Rather than looking for low RSI
-values as in the buy strategy, the **Upper RSI Quantile** is used to
-identify periods during which recent upward momentum has become
-unusually strong compared to the asset's own historical behaviour.
+- **Historical Window** defines the rolling historical period used to
+  compute the RSI quantiles.
+- **Upper RSI Quantile** sets the threshold above which the RSI is
+  considered unusually high.
 
-**Sell condition:** 14-day RSI > Rolling Upper Historical Quantile.
+**Sell condition:** 14-week RSI > Upper Historical RSI Quantile.
 
 ---
+
 ##### Price Volatility
 
-Unlike the buy strategy, this
-indicator uses high volatility as an additional confirmation that the
-market may be entering an excessive bullish phase. For each date, the rolling standard deviation of the closing price is
-computed over the preceding **Rolling Window**. This rolling volatility
-is then compared with its historical distribution computed over the
-preceding **Historical Window**. The **Upper Volatility Quantile**
-defines the threshold above which market volatility is considered
-unusually high.
+Unlike the buy strategy, this indicator uses high volatility as a
+confirmation that the market may be entering an excessive bullish phase.
 
-**Sell condition:** Rolling Volatility >
-Rolling Upper Historical Quantile.
+- **Rolling Window** defines the period used to compute rolling
+  volatility.
+- **Historical Window** defines the rolling historical period used to
+  compute the volatility quantiles.
+- **Upper Volatility Quantile** sets the threshold above which
+  volatility is considered unusually high.
 
+**Sell condition:** Rolling Volatility > Upper Historical Volatility
+Quantile.
 
 """
 
@@ -326,33 +339,41 @@ investment universe for the Historical Top 200 contains fewer than
 
 """
 
+
+  #Historical market capitalization rankings are obtained through the
+  #CoinMarketCap API, while historical price data are downloaded from the
+  #Gate.io Exchange API. The current rankings correspond to 15 July 2026.
+  #Since not every cryptocurrency is listed on Gate.io, the effective
+  #investment universe for the Historical Top 200 contains fewer than
+  #200 assets.
+
+
 bt_methodology = """
-The indicators presented above generate objective buy and sell signals, 
-which are then sequentially applied to historical price data through a systematic backtesting process.
+The indicators presented above generate objective buy and sell signals,
+which are sequentially applied to historical price data through a
+systematic backtesting process. 
+A buy or sell signal is generated only when all three corresponding
+indicators simultaneously satisfy their respective conditions.
 
-The objective of this first version is to evaluate the intrinsic quality 
-of the trading signals independently of any portfolio allocation strategy. 
-Each cryptocurrency is therefore treated as an independent investment account with an initial portfolio value of 100 units.
-Trades executed on one asset never affect the capital available for another. 
-Whenever a buy signal is generated, 100% of the available capital is invested in the asset, 
-and the position is held until the first sell signal, at which point 100% of the position is liquidated.
+This first version evaluates the trading signals independently of any
+portfolio allocation strategy. Each cryptocurrency is treated as an
+independent investment account with an initial portfolio value of
+100 units.
 
-Buy signals are considered only from the peak of the 2021 bull market in order to focus the analysis
-on the most recent complete market cycle. Transaction fees are applied to every buy and sell order. 
-A default fee of 0.20% is used, which is representative of trading fees on major cryptocurrency exchanges.
+- Independent Assets: Trades executed on one asset never affect the capital allocated to another.
+- Position Sizing: Each buy signal invests 100% of the available capital.
+- Position Exit: The position is fully liquidated at the first sell signal.
 
-Once the investment universe and strategy parameters have been configured, 
-the backtest can be executed using the Run Strategy Backtest button. 
-Depending on the selected configuration, the initial execution may take up to 30 seconds. 
-Previously computed backtests are automatically cached, 
-allowing identical configurations to be retrieved instantly without recomputing the results. 
-This makes it easy to compare different parameter combinations and investment universes.
+Buy signals are considered only from the peak of the 2021 bull market,
+and a default transaction fee of 0.20% is applied to every buy and sell
+order. Once the investment universe and strategy parameters have been configured,
+the strategy can be executed using the **Run Strategy Backtest** button.
+The initial execution may take up to 30 seconds depending on the selected
+configuration.
 
-The Configuration Summary section summarizes the exact investment universe and strategy parameters 
-used to generate the results presented below.
-
-All performance statistics are computed exclusively from closed trades, 
-since open positions do not yet have a realized return or a definitive maximum drawdown.
+All performance statistics are computed exclusively from closed trades, since
+open positions do not yet have a realized return or a definitive maximum
+drawdown.
 """
 
 help_universe_coverage="""
@@ -581,4 +602,141 @@ The normalization uses a return bound of 100% and a maximum drawdown bound of
 Compared with the previous objectives, this optimization generally favours more
 stable parameter configurations, potentially at the expense of maximum
 profitability.
+"""
+
+
+about_optimization="""
+
+#### Optimization Methodology
+
+The objective of the optimization process is to identify the indicator
+parameter configuration that maximizes a predefined objective function.
+The trading strategy itself remains unchanged throughout the
+optimization.
+
+Parameter selection is performed using Bayesian optimization. All
+optimizations were conducted using historical market data available up
+to July 15, 2026, preventing look-ahead bias. Each objective is
+optimized over 500 trials, while configurations generating no trades,
+no closed trades, or covering fewer than 20% of the investment universe
+are automatically pruned.
+
+Three objective functions are available. They are computed from return
+statistics alone or from a combination of return and maximum drawdown
+statistics. Because these statistics have different orders of
+magnitude, they are first normalized before being combined into a
+single optimization score.
+
+---
+
+#### Score Normalization
+
+Return statistics are normalized according to
+
+$$
+\\text{Return}_{\\text{normalized}}
+=
+\\operatorname{clip}
+\\left(
+\\frac{\\text{Return}_{\\text{statistic}}}
+{\\text{Return}_{\\text{bound}}},
+0,1
+\\right)
+$$
+
+Maximum drawdown statistics are normalized according to
+
+$$
+\\text{MDD}_{\\text{normalized}}
+=
+\\operatorname{clip}
+\\left(
+1-
+\\frac{|\\text{MDD}_{\\text{statistic}}|}
+{\\text{MDD}_{\\text{bound}}},
+0,1
+\\right)
+$$
+
+The function $\\operatorname{clip}(x,0,1)$ limits normalized values to
+the interval $[0,1]$.
+
+For example, suppose the return normalization bound is 500%. If a
+parameter configuration produces a median trade return of 300%, the
+normalized value is equal to 0.60. A median return of 600% would produce
+a value of 1.20, but clipping limits it to 1. Consequently, increasing
+the median return beyond 500% does not further increase the optimization
+score.
+
+---
+
+#### Objective Functions
+
+"""
+
+median_return="""
+##### Median Return
+
+The optimization score is equal to the normalized median trade return.
+
+$$
+\\text{Score}
+=
+\\text{Return}_{\\text{normalized}}
+$$
+
+where
+
+- $\\text{Return}_{\\text{statistic}}$ = median trade return
+- $\\text{Return}_{\\text{bound}}$ = 500%
+
+"""
+
+median_return_mdd="""
+##### Median Return & Median MDD
+
+The optimization score is the equally weighted average of the normalized
+median trade return and the normalized median maximum drawdown.
+
+$$
+\\text{Score}
+=
+0.5\\times\\text{Return}_{\\text{normalized}}
++
+0.5\\times\\text{MDD}_{\\text{normalized}}
+$$
+
+where
+
+- $\\text{Return}_{\\text{statistic}}$ = median trade return
+- $\\text{MDD}_{\\text{statistic}}$ = median maximum drawdown
+- $\\text{Return}_{\\text{bound}}$ = 250%
+- $\\text{MDD}_{\\text{bound}}$ = 50%
+
+"""
+
+quantile_return_mdd="""
+##### Low Quantile Return & Low Quantile MDD
+
+The optimization score is the equally weighted average of the normalized
+10th percentile of trade returns and the normalized 10th percentile of
+maximum drawdowns. This objective favours parameter configurations that
+remain robust even during weaker trades.
+
+$$
+\\text{Score}
+=
+0.5\\times\\text{Return}_{\\text{normalized}}
++
+0.5\\times\\text{MDD}_{\\text{normalized}}
+$$
+
+where
+
+- $\\text{Return}_{\\text{statistic}}$ = 10th percentile of trade returns
+- $\\text{MDD}_{\\text{statistic}}$ = 10th percentile of maximum drawdowns
+- $\\text{Return}_{\\text{bound}}$ = 200%
+- $\\text{MDD}_{\\text{bound}}$ = 70%
+
+
 """

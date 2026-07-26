@@ -3,6 +3,7 @@ import pandas as pd
 import vectorbt as vbt
 import optuna
 
+from pathlib import Path
 from utils.QIS.crypto import data as dt
 from utils.QIS.crypto import indicators as ind
 from utils.QIS.crypto import signals as sin
@@ -25,11 +26,15 @@ with tab1:
     with st.expander(label="About the Project",expanded=False):
         st.markdown(text.project_overview)
 
-    file_top_200_passe="/Users/brunochoupina/Documents/Projets/Streamlit/utils/QIS/crypto/top_200_passe.xlsx"
-    file_top200_filtre="/Users/brunochoupina/Documents/Projets/Streamlit/utils/QIS/crypto/top_200_filtre.xlsx"
-    file_top500_filtre="/Users/brunochoupina/Documents/Projets/Streamlit/utils/QIS/crypto/top_500_filtre.xlsx"
+    ROOT_DIR = Path(__file__).resolve().parent.parent
+    CRYPTO_DIR = ROOT_DIR / "utils" / "QIS" / "crypto"
+    OPTIMIZATIONS_DIR = CRYPTO_DIR / "optimizations"
 
-    @st.cache_data(scope="session")
+    file_top_200_passe = CRYPTO_DIR / "top_200_passe.xlsx"
+    file_top200_filtre = CRYPTO_DIR / "top_200_filtre.xlsx"
+    file_top500_filtre = CRYPTO_DIR / "top_500_filtre.xlsx"
+
+    @st.cache_data
     def load_universe(path):
         return pd.read_excel(path, index_col=0)
 
@@ -46,61 +51,60 @@ with tab1:
     # ============================================================
     with st.form("backtesting_params",border=False):
 
-        st.markdown("### Buy Strategy")
-        st.markdown("**A buy signal is generated only when all three indicators simultaneously satisfy their respective conditions.**")
+        #st.markdown("### Buy Strategy")
+        st.markdown("**A buy or sell signal is generated only when all three corresponding indicators simultaneously satisfy their respective conditions.**")
 
         with st.expander("Understanding the Buy Indicators",expanded=False):
             st.markdown(text.all_buy_indicators)
 
-        with st.expander("Configure Buy Parameters",expanded=False):
-        
-            st.markdown("##### Price Volatility")
-            fenetre_glissante_volat_achat = st.slider("Rolling Window (days)", 30, 120, 60, key="buy_vol_window")
-            fenetre_quantile_volat_achat = st.slider("Historical Window (days)", 500, 1300, 750, key="buy_vol_historical_window")
-            quantile_bas_volat_achat = st.slider("Lower Volatility Quantile", 0.05, 0.25, 0.10, 0.01, key="buy_lower_vol_quantile")
-
-            st.text("")
-            st.markdown("##### Relative Trading Range")
-            nb_jours_arriere_ecart_relatif = st.slider("Rolling Window (days)", 60, 300, 120, key="buy_range_window")
-            nb_jour_mm_ecart_relatif = st.slider("Moving Average Window (days)", 20, 75, 40, key="buy_range_ma_window")
-            nb_jour_quantiles_ecart_relatif = st.slider("Historical Window (days)", 500, 1300, 750, key="buy_range_historical_window")
-            quantile_bas_ecart_relatif = st.slider("Lower Trading Range Quantile", 0.05, 0.25, 0.10, 0.01, key="buy_lower_range_quantile")
-
-            st.text("")
-            st.markdown("##### RSI Confirmation")
-            critere_rsi_achat = st.slider("RSI Buy Threshold", 35, 60, 40)
-
-
-        # ============================================================
-        # SELL STRATEGY
-        # ============================================================
-
-        st.markdown("### Sell Strategy")
-        st.markdown("**A sell signal is generated only when all three sell indicators simultaneously satisfy their respective conditions.**")
-
         with st.expander("Understanding the Sell Indicators"):
             st.markdown(text.all_sell_indicators)
 
-        with st.expander("Configure Sell Parameters", expanded=False):
+        with st.expander("Configure Strategy Parameters",expanded=True):
 
-            st.markdown("##### ROI Parameters")
+            col1, col2,col3 =st.columns([5,1,5])
 
-            periode_roi_en_jours = st.slider("Rolling Window (days)", 30, 365, 180, key="sell_roi_window")
-            nb_annees_quantile_roi = st.slider("Historical Window (years)", 1.5, 4.0, 2.0, 0.1, key="sell_roi_historical_window")
-            quantile_haut_roi = st.slider("Upper ROI Quantile", 0.75, 0.95, 0.85, 0.01)
-            
-            st.text("")
-            st.markdown("##### RSI Parameters")
+            with col1:
+                st.markdown("#### Buy Indicators")
+                st.markdown("##### Price Volatility")
+                fenetre_glissante_volat_achat = st.slider("Rolling Window (days)", 30, 120, 60, key="buy_vol_window")
+                fenetre_quantile_volat_achat = st.slider("Historical Window (days)", 500, 1300, 750, key="buy_vol_historical_window")
+                quantile_bas_volat_achat = st.slider("Lower Volatility Quantile", 0.05, 0.25, 0.10, 0.01, key="buy_lower_vol_quantile")
 
-            nb_annees_quantile_rsi = st.slider("Historical Window (years)", 1.5, 4.0, 2.0, 0.1, key="sell_rsi_historical_window")
-            quantile_haut_rsi = st.slider("Upper RSI Quantile", 0.75, 0.95, 0.85, 0.01)
+                st.text("")
+                st.markdown("##### Relative Trading Range")
+                nb_jours_arriere_ecart_relatif = st.slider("Rolling Window (days)", 60, 300, 120, key="buy_range_window")
+                nb_jour_mm_ecart_relatif = st.slider("Moving Average Window (days)", 20, 75, 40, key="buy_range_ma_window")
+                nb_jour_quantiles_ecart_relatif = st.slider("Historical Window (days)", 500, 1300, 750, key="buy_range_historical_window")
+                quantile_bas_ecart_relatif = st.slider("Lower Trading Range Quantile", 0.05, 0.25, 0.10, 0.01, key="buy_lower_range_quantile")
 
-            st.text("")
-            st.markdown("##### Price Volatility Parameters")
+                st.text("")
+                st.markdown("##### RSI Confirmation")
+                critere_rsi_achat = st.slider("RSI Buy Threshold", 35, 60, 40)
 
-            fenetre_glissante_volat_vente = st.slider("Rolling Window (days)", 30, 120, 60, key="sell_vol_window")
-            fenetre_quantile_volat_vente = st.slider("Historical Window (days)", 500, 1500, 750, key="sell_vol_historical_window")
-            quantile_haut_volat_vente = st.slider("Upper Volatility Quantile", 0.75, 0.965, 0.85, 0.005, key="sell_upper_vol_quantile")
+            with col3:
+                
+                st.markdown("#### Sell Indicators")
+                st.markdown("##### ROI")
+
+                periode_roi_en_jours = st.slider("Rolling Window (days)", 30, 365, 180, key="sell_roi_window")
+                nb_annees_quantile_roi = st.slider("Historical Window (years)", 1.5, 4.0, 2.0, 0.1, key="sell_roi_historical_window")
+                quantile_haut_roi = st.slider("Upper ROI Quantile", 0.75, 0.95, 0.85, 0.01)
+                
+                st.text("")
+                st.markdown("##### RSI")
+
+                nb_annees_quantile_rsi = st.slider("Historical Window (years)", 1.5, 4.0, 2.0, 0.1, key="sell_rsi_historical_window")
+                quantile_haut_rsi = st.slider("Upper RSI Quantile", 0.75, 0.95, 0.85, 0.01)
+
+                st.text("")
+                st.markdown("##### Price Volatility")
+
+                fenetre_glissante_volat_vente = st.slider("Rolling Window (days)", 30, 120, 60, key="sell_vol_window")
+                fenetre_quantile_volat_vente = st.slider("Historical Window (days)", 500, 1500, 750, key="sell_vol_historical_window")
+                quantile_haut_volat_vente = st.slider("Upper Volatility Quantile", 0.75, 0.965, 0.85, 0.005, key="sell_upper_vol_quantile")
+
+
 
         # ============================================================
         # GLOBAL PARAMETER DICTIONARY
@@ -154,6 +158,7 @@ with tab1:
         with st.expander("About the Investment Universes",expanded=False):
             st.markdown(text.investment_universe)
 
+        st.text("")
         universe=st.segmented_control(label="Investment Universe",options=["Historical Top 200","Current Top 500 Filtered","Current Top 200 Filtered"],default="Historical Top 200")
 
         if universe=="Historical Top 200":
@@ -205,7 +210,7 @@ with tab1:
 
     
     st.text("")
-    st.markdown("### Configuration Summary")
+    st.markdown("#### Configuration Summary")
 
     with st.expander("Backtest Parameters", expanded=False):
 
@@ -262,7 +267,7 @@ with tab1:
 
     st.text("")
 
-    st.markdown("### Statistical Results")
+    st.markdown("#### Statistical Results")
 
     resultats=st.session_state["resultats_backtest"]
     trades_total=resultats["trades"].copy()
@@ -288,8 +293,8 @@ with tab1:
     col1.metric("Win Rate", f'{basic_stats["Win Rate"]:.1%}')
     col2.metric("Average Return", f'{basic_stats["Average Return"]:.2f}%')
     col3.metric("Median Return", f'{basic_stats["Median Return"]:.2f}%')
-    col4.metric("Return Volatility", f'{basic_stats["Return Standard Deviation"]:.2f}%')
-    col5.metric("Avg. Maximum Drawdown", f'{basic_stats["Average Maximum Drawdown"]:.2f}%',help=text.help_mdd)
+    col4.metric("Avg. Maximum Drawdown", f'{basic_stats["Average Maximum Drawdown"]:.2f}%',help=text.help_mdd)
+    col5.metric("Median Maximum Drawdown", f'{basic_stats["Median Maximum Drawdown"]:.2f}%',help=text.help_mdd)
 
     with st.expander("Other Trade Statistics", expanded=False):
         st.dataframe(advanced_stats, hide_index=True, use_container_width=True)
@@ -311,8 +316,32 @@ with tab1:
 
     portfolio=resultats["portfolio"]
 
-    st.markdown("### Individual Trade Analysis")
-    st.markdown("Explore the price charts and complete history of the trades generated by the strategy.")
+    st.markdown("#### Individual Trade Analysis")
+    st.markdown("Explore the complete history and the price charts of the trades generated by the strategy.")
+    
+    with st.expander("Closed Trades",expanded=True):
+        trades_display = trades_total.copy()
+        trades_display["Return"] *= 100
+
+        trades_display.rename(columns={
+            "Trade Status": "Status",
+            "Entry Timestamp": "Entry Date",
+            "Exit Timestamp": "Exit Date",
+            "Average Entry Price": "Entry Price",
+            "Average Exit Price": "Exit Price",
+            "Profit & Loss": "P&L",
+            "Return": "Return (%)",
+            "Maximum Drawdown": "Maximum Drawdown (%)",
+            "PnL / Maximum Drawdown": "Return / Maximum Drawdown"
+        }, inplace=True)
+
+        trades_display = trades_display[[
+            "Asset","Direction", "Status", "Entry Date", "Exit Date",
+            "Holding Period (Days)", "Entry Price", "Exit Price",
+            "P&L", "Return (%)", "Maximum Drawdown (%)",
+            "Return / Maximum Drawdown","Entry Fees","Exit Fees"
+        ]]
+        st.dataframe(trades_display[trades_display["Status"]=="Closed"],use_container_width=True)
 
     with st.expander("Best Trades",expanded=False):
 
@@ -396,63 +425,27 @@ with tab1:
                 fig.update_layout(title=token)
                 st.plotly_chart(fig,key=f"{token}_sell")
     
-    with st.expander("Closed Trades",expanded=False):
-        trades_display = trades_total.copy()
-        trades_display["Return"] *= 100
-
-        trades_display.rename(columns={
-            "Trade Status": "Status",
-            "Entry Timestamp": "Entry Date",
-            "Exit Timestamp": "Exit Date",
-            "Average Entry Price": "Entry Price",
-            "Average Exit Price": "Exit Price",
-            "Profit & Loss": "P&L",
-            "Return": "Return (%)",
-            "Maximum Drawdown": "Maximum Drawdown (%)",
-            "PnL / Maximum Drawdown": "Return / Maximum Drawdown"
-        }, inplace=True)
-
-        trades_display = trades_display[[
-            "Asset","Direction", "Status", "Entry Date", "Exit Date",
-            "Holding Period (Days)", "Entry Price", "Exit Price",
-            "P&L", "Return (%)", "Maximum Drawdown (%)",
-            "Return / Maximum Drawdown","Entry Fees","Exit Fees"
-        ]]
-        st.dataframe(trades_display[trades_display["Status"]=="Closed"],use_container_width=True)
-
 
 
     st.divider()
     st.markdown("## Strategy Optimization")
 
-    median_return="sqlite:////Users/brunochoupina/Documents/Projets/Streamlit/utils/QIS/crypto/optimizations/v0_median_return"
-    median="sqlite:////Users/brunochoupina/Documents/Projets/Streamlit/utils/QIS/crypto/optimizations/v0_median"
-    low_quantile="sqlite:////Users/brunochoupina/Documents/Projets/Streamlit/utils/QIS/crypto/optimizations/v0_low_quantile"
+    median_return = f"sqlite:///{OPTIMIZATIONS_DIR / 'v0_median_return'}"
+    median = f"sqlite:///{OPTIMIZATIONS_DIR / 'v0_median'}"
+    low_quantile = f"sqlite:///{OPTIMIZATIONS_DIR / 'v0_low_quantile'}"
     
     with st.expander("About the Optimization", expanded=False):
 
+        st.markdown(text.about_optimization)
+        st.markdown(text.median_return)
+        st.text("")
+        st.text("")
+        st.markdown(text.median_return_mdd)
+        st.text("")
+        st.text("")
+        st.markdown(text.quantile_return_mdd)
 
-        st.markdown(text.about_optimization_1)
-        st.markdown("---")
-
-        st.markdown(text.about_optimization_2)
-        st.markdown("---")
-
-        st.markdown(text.about_optimization_3)
-        st.markdown("---")
-
-        st.markdown(text.about_optimization_4)
-        st.markdown("---")
-
-        st.markdown(text.about_optimization_5)
-        st.markdown("---")
-
-        st.markdown(text.about_optimization_6)
-        st.markdown("---")
-
-        st.markdown(text.about_optimization_7)
-
-    optimisation_type=st.segmented_control("Optimisation Criterium",["Median Return",'Median Return & Median MDD',"Low Quantile Return & MDD"])
+    optimisation_type=st.segmented_control("Optimisation Criterium",["Median Return",'Median Return & Median MDD',"Low Quantile Return & MDD"],default="Median Return")
 
     if optimisation_type=="Median Return":
         file=median_return
@@ -546,8 +539,8 @@ with tab1:
         col1.metric("Win Rate", f'{basic_stats["Win Rate"]:.1%}')
         col2.metric("Average Return", f'{basic_stats["Average Return"]:.2f}%')
         col3.metric("Median Return", f'{basic_stats["Median Return"]:.2f}%')
-        col4.metric("Return Volatility", f'{basic_stats["Return Standard Deviation"]:.2f}%')
-        col5.metric("Avg. Maximum Drawdown", f'{basic_stats["Average Maximum Drawdown"]:.2f}%',help=text.help_mdd)
+        col4.metric("Avg. Maximum Drawdown", f'{basic_stats["Average Maximum Drawdown"]:.2f}%',help=text.help_mdd)
+        col5.metric("Median Maximum Drawdown", f'{basic_stats["Median Maximum Drawdown"]:.2f}%')
 
         if st.toggle("Other Trade Statistics", value=False):
             st.dataframe(advanced_stats, hide_index=True, use_container_width=True)
@@ -572,7 +565,30 @@ with tab1:
 
     #st.markdown("### Individual Trade Analysis")
     #st.markdown("Explore the price charts and complete history of the trades generated by the strategy.")
+   
+    with st.expander("Closed Trades",expanded=False):
+        trades_display = trades_total.copy()
+        trades_display["Return"] *= 100
 
+        trades_display.rename(columns={
+            "Trade Status": "Status",
+            "Entry Timestamp": "Entry Date",
+            "Exit Timestamp": "Exit Date",
+            "Average Entry Price": "Entry Price",
+            "Average Exit Price": "Exit Price",
+            "Profit & Loss": "P&L",
+            "Return": "Return (%)",
+            "Maximum Drawdown": "Maximum Drawdown (%)",
+            "PnL / Maximum Drawdown": "Return / Maximum Drawdown"
+        }, inplace=True)
+
+        trades_display = trades_display[[
+            "Asset","Direction", "Status", "Entry Date", "Exit Date",
+            "Holding Period (Days)", "Entry Price", "Exit Price",
+            "P&L", "Return (%)", "Maximum Drawdown (%)",
+            "Return / Maximum Drawdown","Entry Fees","Exit Fees"
+        ]]
+        st.dataframe(trades_display[trades_display["Status"]=="Closed"],use_container_width=True)
 
     with st.expander("Best Trades",expanded=False):
 
@@ -656,26 +672,3 @@ with tab1:
                 fig.update_layout(title=token)
                 st.plotly_chart(fig,key=f"{token}_sell_opt")
 
-    with st.expander("Closed Trades",expanded=False):
-        trades_display = trades_total.copy()
-        trades_display["Return"] *= 100
-
-        trades_display.rename(columns={
-            "Trade Status": "Status",
-            "Entry Timestamp": "Entry Date",
-            "Exit Timestamp": "Exit Date",
-            "Average Entry Price": "Entry Price",
-            "Average Exit Price": "Exit Price",
-            "Profit & Loss": "P&L",
-            "Return": "Return (%)",
-            "Maximum Drawdown": "Maximum Drawdown (%)",
-            "PnL / Maximum Drawdown": "Return / Maximum Drawdown"
-        }, inplace=True)
-
-        trades_display = trades_display[[
-            "Asset","Direction", "Status", "Entry Date", "Exit Date",
-            "Holding Period (Days)", "Entry Price", "Exit Price",
-            "P&L", "Return (%)", "Maximum Drawdown (%)",
-            "Return / Maximum Drawdown","Entry Fees","Exit Fees"
-        ]]
-        st.dataframe(trades_display[trades_display["Status"]=="Closed"],use_container_width=True)

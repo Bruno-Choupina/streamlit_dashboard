@@ -108,7 +108,9 @@ def stats_trades(df_trades, nb_tokens_total):
 
     if not returns.empty:
         cutoff = max(1, int(len(returns) * 0.95))
-        average_return_excluding_top_5 = returns.sort_values().iloc[:cutoff].mean() * 100
+        average_return_excluding_top_5 = (
+            returns.sort_values().iloc[:cutoff].mean() * 100
+        )
     else:
         average_return_excluding_top_5 = 0
 
@@ -118,15 +120,33 @@ def stats_trades(df_trades, nb_tokens_total):
     gross_profit = winning_returns.sum()
     gross_loss = abs(losing_returns.sum())
 
-    profit_factor = gross_profit / gross_loss if gross_loss > 0 else float("inf") if gross_profit > 0 else 0
-    payoff_ratio = average_gain / abs(average_loss) if average_loss < 0 else float("inf") if average_gain > 0 else 0
+    profit_factor = (
+        gross_profit / gross_loss
+        if gross_loss > 0
+        else float("inf") if gross_profit > 0
+        else 0
+    )
+
+    payoff_ratio = (
+        average_gain / abs(average_loss)
+        if average_loss < 0
+        else float("inf") if average_gain > 0
+        else 0
+    )
 
     average_maximum_drawdown = drawdowns.mean() if not drawdowns.empty else 0
-    maximum_drawdown_10th_percentile = drawdowns.quantile(0.10) if not drawdowns.empty else 0
+    median_maximum_drawdown = drawdowns.median() if not drawdowns.empty else 0
+    maximum_drawdown_10th_percentile = (
+        drawdowns.quantile(0.10) if not drawdowns.empty else 0
+    )
 
     average_holding_period = holding_periods.mean() if not holding_periods.empty else 0
-    average_winning_duration = df.loc[df["Return"] > 0, "Holding Period (Days)"].mean()
-    average_losing_duration = df.loc[df["Return"] < 0, "Holding Period (Days)"].mean()
+    average_winning_duration = df.loc[
+        df["Return"] > 0, "Holding Period (Days)"
+    ].mean()
+    average_losing_duration = df.loc[
+        df["Return"] < 0, "Holding Period (Days)"
+    ].mean()
 
     basic_stats = {
         "Total Trades": int(total_trades),
@@ -136,7 +156,7 @@ def stats_trades(df_trades, nb_tokens_total):
         "Win Rate": round(float(win_rate), 4),
         "Average Return": round(float(average_return), 4),
         "Median Return": round(float(median_return), 4),
-        "Return Standard Deviation": round(float(return_std), 4),
+        "Median Maximum Drawdown": round(float(median_maximum_drawdown), 4),
         "Average Maximum Drawdown": round(float(average_maximum_drawdown), 4),
         "Average Holding Period": round(float(average_holding_period), 2)
     }
@@ -145,42 +165,48 @@ def stats_trades(df_trades, nb_tokens_total):
         "Metric": [
             "Best Return",
             "Worst Return",
+            "Return Standard Deviation",
             "Average Return Excluding Top 5%",
             "10th Percentile Return",
+            "10th Percentile Maximum Drawdown",
             "Average Loss",
             "Profit Factor",
             "Payoff Ratio",
-            "10th Percentile Maximum Drawdown",
             "Average Winning Trade Duration (days)",
             "Average Losing Trade Duration (days)"
         ],
         "Value": [
             round(float(best_return), 4),
             round(float(worst_return), 4),
+            round(float(return_std), 4),
             round(float(average_return_excluding_top_5), 4),
             round(float(return_10th_percentile), 4),
+            round(float(maximum_drawdown_10th_percentile), 4),
             round(float(average_loss), 4),
             round(float(profit_factor), 4),
             round(float(payoff_ratio), 4),
-            round(float(maximum_drawdown_10th_percentile), 4),
             round(float(average_winning_duration), 2),
             round(float(average_losing_duration), 2)
         ],
         "Comment": [
             "Highest return achieved by a single trade (%).",
             "Lowest return achieved by a single trade (%).",
+            "Standard deviation of trade returns, measuring the dispersion of returns around their average (%).",
             "Average return after excluding the top 5% highest trade returns (%).",
             "Return exceeded by 90% of trades; only the worst 10% performed below this value (%).",
+            "Maximum drawdown exceeded by 90% of trades; only the worst 10% of trades experienced a larger drawdown (%).",
             "Average return of losing trades (%).",
             "Total gains divided by the absolute value of total losses.",
             "Average winning return divided by the absolute value of the average losing return.",
-            "Maximum drawdown exceeded by 90% of trades; only the worst 10% of trades experienced a larger drawdown (%).",
             "Average holding period of profitable trades (days).",
             "Average holding period of losing trades (days)."
         ]
     })
 
-    return {"basic_stats": basic_stats, "advanced_stats": advanced_stats}
+    return {
+        "basic_stats": basic_stats,
+        "advanced_stats": advanced_stats
+    }
 
 
 def indice_composite_v0(trades, params_optimisation):
