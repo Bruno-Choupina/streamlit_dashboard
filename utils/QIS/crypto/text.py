@@ -239,7 +239,7 @@ all_sell_indicators="""
 This indicator identifies assets whose recent price appreciation has
 become unusually large relative to their historical behaviour.
 
-- **ROI Window** defines the period used to compute the recent Return On
+- **Rolling Window** defines the period used to compute the recent Return On
   Investment (ROI).
 - **Historical Window** defines the rolling historical period used to
   compute the ROI quantiles.
