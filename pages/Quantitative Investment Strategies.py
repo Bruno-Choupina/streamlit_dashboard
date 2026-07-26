@@ -341,6 +341,7 @@ with tab1:
             "P&L", "Return (%)", "Maximum Drawdown (%)",
             "Return / Maximum Drawdown","Entry Fees","Exit Fees"
         ]]
+        trades_display.set_index("Asset",inplace=True)
         st.dataframe(trades_display[trades_display["Status"]=="Closed"],use_container_width=True)
 
     with st.expander("Best Trades",expanded=False):
@@ -588,6 +589,7 @@ with tab1:
             "P&L", "Return (%)", "Maximum Drawdown (%)",
             "Return / Maximum Drawdown","Entry Fees","Exit Fees"
         ]]
+        trades_display.set_index("Asset",inplace=True)
         st.dataframe(trades_display[trades_display["Status"]=="Closed"],use_container_width=True)
 
     with st.expander("Best Trades",expanded=False):
