@@ -16,3 +16,4 @@ yfinance==0.2.59
 scikit-learn==1.7.2
 ipython==9.2.0
 python-binance==1.0.28
+anywidget==0.11.0
