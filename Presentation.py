@@ -5,7 +5,7 @@ from utils.QIS.crypto import text
 
 
 st.set_page_config(
-    page_title="Bruno Quant Hub",
+    page_title="Bruno Quant App",
     page_icon="📊",
     layout="wide"
 )
