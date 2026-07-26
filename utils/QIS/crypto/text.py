@@ -37,7 +37,7 @@ historical backtesting.
 
 This application provides an interactive environment to configure the
 strategy parameters and investment universe, run historical backtests,
-analyze the generated trades, and compare different parameter
+analyze the generated trades, and compare different optimized parameter
 configurations. Future versions will extend both the trading logic and
 the portfolio management methodology.
 
