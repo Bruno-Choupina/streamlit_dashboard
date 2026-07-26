@@ -52,7 +52,7 @@ with tab1:
     with st.form("backtesting_params",border=False):
 
         #st.markdown("### Buy Strategy")
-        st.markdown("**A buy or sell signal is generated only when all three corresponding indicators simultaneously satisfy their respective conditions.**")
+        #st.markdown("**A buy or sell signal is generated only when all three corresponding indicators simultaneously satisfy their respective conditions.**")
 
         with st.expander("Understanding the Buy Indicators",expanded=False):
             st.markdown(text.all_buy_indicators)
@@ -60,7 +60,7 @@ with tab1:
         with st.expander("Understanding the Sell Indicators"):
             st.markdown(text.all_sell_indicators)
 
-        with st.expander("Configure Strategy Parameters",expanded=True):
+        with st.expander("Configure Strategy Parameters",expanded=False):
 
             col1, col2,col3 =st.columns([5,1,5])
 
