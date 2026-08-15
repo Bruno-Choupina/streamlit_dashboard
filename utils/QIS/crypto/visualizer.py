@@ -211,6 +211,16 @@ def build_figure(df_token, token, params, panels, panel_height=240):
     sub = df_token.loc[fvi:] if fvi is not None else df_token
     close = sub[token]
 
+    # Garde-fou : ne JAMAIS planter si l'historique est trop court (< 3 bougies,
+    # sinon index[1] leve une IndexError dans les indicateurs vectorises).
+    if len(sub.dropna()) < 3:
+        fig = go.Figure()
+        fig.add_annotation(text=f"Not enough price history for {token}.",
+                           showarrow=False, font=dict(size=14, color="#888888"))
+        fig.update_layout(height=180, template="plotly_white",
+                          xaxis=dict(visible=False), yaxis=dict(visible=False))
+        return fig
+
     c = _compute(sub, token, params)
     buy_sig, sell_sig = _signals(c)
     buy_sig = buy_sig.reindex(sub.index).fillna(False)

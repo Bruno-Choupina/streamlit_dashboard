@@ -471,10 +471,12 @@ with tab1:
                         st.warning(f"No Gate.io price history available for {token}.")
                     else:
                         fig_viz = _build_viz_figure(df_token, token, params_backtest, selected_panels)
-                        st.plotly_chart(
-                            fig_viz, use_container_width=True, key=f"viz_bt_chart_{token}",
-                            config={"scrollZoom": True},
-                        )
+                        _cL, _cM, _cR = st.columns([1, 4, 1])
+                        with _cM:
+                            st.plotly_chart(
+                                fig_viz, use_container_width=True, key=f"viz_bt_chart_{token}",
+                                config={"scrollZoom": True},
+                            )
 
 
     st.divider()
@@ -762,8 +764,10 @@ with tab1:
                         st.warning(f"No Gate.io price history available for {token}.")
                     else:
                         fig_viz = _build_viz_figure(df_token, token, params, selected_panels)
-                        st.plotly_chart(
-                            fig_viz, use_container_width=True, key=f"viz_opt_chart_{token}",
-                            config={"scrollZoom": True},
-                        )
+                        _cL, _cM, _cR = st.columns([1, 4, 1])
+                        with _cM:
+                            st.plotly_chart(
+                                fig_viz, use_container_width=True, key=f"viz_opt_chart_{token}",
+                                config={"scrollZoom": True},
+                            )
 
