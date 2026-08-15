@@ -365,6 +365,21 @@ MDD=Maximum Drawdown,
 the maximum losing return achieved by a trade during his life
 """
 
+about_indicator_visualizer = """
+This section provides a direct visual illustration of the strategy on a single asset.
+For a chosen cryptocurrency and a given parameter configuration, it plots each indicator
+together with its quantile thresholds, so that one can see concretely how the signals are
+constructed and exactly when a buy or sell condition is met.
+
+It also adds an up-to-date dimension that the preceding analyses lack. Whereas the backtest
+relies on a fixed investment universe whose price history ends on 15 July 2026, this
+visualizer applies the same indicators and signal logic to any chosen asset among the current
+top 500 cryptocurrencies by market capitalization, using prices that are continuously
+refreshed. Because the data remain current, the tool is not confined to historical study.
+At any point in the future, and for any observer, it answers a concrete question: given
+these parameters, does the strategy currently indicate an opportune moment to buy or to sell?
+
+"""
 
 
 about_optimization_1 = """
