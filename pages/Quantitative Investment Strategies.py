@@ -12,6 +12,7 @@ from utils.QIS.crypto import params
 from utils.QIS.crypto import analysis
 from utils.QIS.crypto import optimization as opt
 from utils.QIS.crypto import text
+from utils.QIS.crypto import visualizer as viz
 
 #st.markdown("# Choose The Project")
 #projet=st.segmented_control(label="Choose The Project",options=["Crypto Investment","VEC statistical arbitrage"],default=None)
@@ -41,6 +42,12 @@ with tab1:
     df_top_200_passe = load_universe(file_top_200_passe)
     df_top_200_filtre = load_universe(file_top200_filtre)
     df_top_500_filtre = load_universe(file_top500_filtre)
+
+
+    @st.cache_data(show_spinner=False)
+    def _build_viz_figure(df_token, token, params, panels):
+        return viz.build_figure(df_token, token, params, tuple(panels))
+
 
 
     st.divider()
@@ -367,8 +374,8 @@ with tab1:
                 close=close.dropna()
                 fig.update_xaxes(range=[close.index[0],close.index[-1]])
 
-                fig.update_layout(title=token)
-                st.plotly_chart(fig,key=f"{token}_buy")
+                fig.update_layout(title=token, dragmode="pan")
+                st.plotly_chart(fig,key=f"{token}_buy",config={"scrollZoom":True})
 
         with col2:
 
@@ -381,8 +388,8 @@ with tab1:
                 close=close.dropna()
                 fig.update_xaxes(range=[close.index[0],close.index[-1]])
 
-                fig.update_layout(title=token)
-                st.plotly_chart(fig,key=f"{token}_buy")
+                fig.update_layout(title=token, dragmode="pan")
+                st.plotly_chart(fig,key=f"{token}_buy",config={"scrollZoom":True})
 
     with st.expander("Worst Trades",expanded=False):
 
@@ -409,8 +416,8 @@ with tab1:
                 close=close.dropna()
                 fig.update_xaxes(range=[close.index[0],close.index[-1]])
 
-                fig.update_layout(title=token)
-                st.plotly_chart(fig,key=f"{token}_sell")
+                fig.update_layout(title=token, dragmode="pan")
+                st.plotly_chart(fig,key=f"{token}_sell",config={"scrollZoom":True})
 
         with col2:
 
@@ -423,9 +430,51 @@ with tab1:
                 close=close.dropna()
                 fig.update_xaxes(range=[close.index[0],close.index[-1]])
 
-                fig.update_layout(title=token)
-                st.plotly_chart(fig,key=f"{token}_sell")
-    
+                fig.update_layout(title=token, dragmode="pan")
+                st.plotly_chart(fig,key=f"{token}_sell",config={"scrollZoom":True})
+
+
+    # Indicator Visualizer (sous-section du backtest, dans la continuite de
+    # "Individual Trade Analysis") -> parametres configures manuellement.
+    st.markdown("#### Indicator Visualizer")
+    with st.expander("About the Indicator Visualizer", expanded=False):
+        st.markdown(text.about_indicator_visualizer)
+    with st.expander("Indicator Visualizer", expanded=False):
+        gate_listed = viz.gate_pairs()
+        top500 = viz.top_500_symbols()
+        available_tokens = [s for s in top500 if f"{s}_USDT" in gate_listed]
+        if not available_tokens:
+            st.info("Could not load the current top 500.")
+        else:
+            default_tokens = [t for t in ["BTC", "ETH", "SOL"] if t in available_tokens][:1] \
+                or available_tokens[:1]
+            col_sel1, col_sel2 = st.columns(2)
+            with col_sel1:
+                selected_tokens = st.multiselect(
+                    "Assets (current top 500 by market cap)", options=available_tokens,
+                    default=default_tokens, key="viz_bt_tokens",
+                )
+            with col_sel2:
+                selected_panels = st.multiselect(
+                    "Indicators to display", options=viz.ALL_PANELS, default=viz.ALL_PANELS,
+                    key="viz_bt_panels",
+                )
+            if not selected_tokens:
+                st.info("Select at least one asset to display.")
+            else:
+                for i, token in enumerate(selected_tokens):
+                    if i > 0:
+                        st.divider()
+                    st.markdown(f"###### {token}")
+                    df_token = viz.gate_weekly_close(token)
+                    if df_token.empty:
+                        st.warning(f"No Gate.io price history available for {token}.")
+                    else:
+                        fig_viz = _build_viz_figure(df_token, token, params_backtest, selected_panels)
+                        st.plotly_chart(
+                            fig_viz, use_container_width=True, key=f"viz_bt_chart_{token}",
+                            config={"scrollZoom": True},
+                        )
 
 
     st.divider()
@@ -615,8 +664,8 @@ with tab1:
                 close=close.dropna()
                 fig.update_xaxes(range=[close.index[0],close.index[-1]])
 
-                fig.update_layout(title=token)
-                st.plotly_chart(fig,key=f"{token}_buy_opt")
+                fig.update_layout(title=token, dragmode="pan")
+                st.plotly_chart(fig,key=f"{token}_buy_opt",config={"scrollZoom":True})
 
         with col2:
 
@@ -629,8 +678,8 @@ with tab1:
                 close=close.dropna()
                 fig.update_xaxes(range=[close.index[0],close.index[-1]])
 
-                fig.update_layout(title=token)
-                st.plotly_chart(fig,key=f"{token}_buy_opt")
+                fig.update_layout(title=token, dragmode="pan")
+                st.plotly_chart(fig,key=f"{token}_buy_opt",config={"scrollZoom":True})
 
     with st.expander("Worst Trades",expanded=False):
 
@@ -657,8 +706,8 @@ with tab1:
                 close=close.dropna()
                 fig.update_xaxes(range=[close.index[0],close.index[-1]])
 
-                fig.update_layout(title=token)
-                st.plotly_chart(fig,key=f"{token}_sell_opt")
+                fig.update_layout(title=token, dragmode="pan")
+                st.plotly_chart(fig,key=f"{token}_sell_opt",config={"scrollZoom":True})
 
         with col2:
 
@@ -671,6 +720,50 @@ with tab1:
                 close=close.dropna()
                 fig.update_xaxes(range=[close.index[0],close.index[-1]])
 
-                fig.update_layout(title=token)
-                st.plotly_chart(fig,key=f"{token}_sell_opt")
+                fig.update_layout(title=token, dragmode="pan")
+                st.plotly_chart(fig,key=f"{token}_sell_opt",config={"scrollZoom":True})
+
+
+    # Indicator Visualizer (duplique dans l'optimisation) -> parametres OPTIMAUX
+    # du critere d'optimisation selectionne (variable `params`).
+    with st.expander("Indicator Visualizer", expanded=False):
+        st.markdown(
+            "This visualizer uses the optimal parameters of the selected optimization "
+            "criterion. See *About the Indicator Visualizer* in the backtesting section above."
+        )
+        gate_listed = viz.gate_pairs()
+        top500 = viz.top_500_symbols()
+        available_tokens = [s for s in top500 if f"{s}_USDT" in gate_listed]
+        if not available_tokens:
+            st.info("Could not load the current top 500 (check CoinMarketCap / Gate.io access).")
+        else:
+            default_tokens = [t for t in ["BTC", "ETH", "SOL"] if t in available_tokens][:1] \
+                or available_tokens[:1]
+            col_sel1, col_sel2 = st.columns(2)
+            with col_sel1:
+                selected_tokens = st.multiselect(
+                    "Assets (current top 500 by market cap)", options=available_tokens,
+                    default=default_tokens, key="viz_opt_tokens",
+                )
+            with col_sel2:
+                selected_panels = st.multiselect(
+                    "Indicators to display", options=viz.ALL_PANELS, default=viz.ALL_PANELS,
+                    key="viz_opt_panels",
+                )
+            if not selected_tokens:
+                st.info("Select at least one asset to display.")
+            else:
+                for i, token in enumerate(selected_tokens):
+                    if i > 0:
+                        st.divider()
+                    st.markdown(f"###### {token}")
+                    df_token = viz.gate_weekly_close(token)
+                    if df_token.empty:
+                        st.warning(f"No Gate.io price history available for {token}.")
+                    else:
+                        fig_viz = _build_viz_figure(df_token, token, params, selected_panels)
+                        st.plotly_chart(
+                            fig_viz, use_container_width=True, key=f"viz_opt_chart_{token}",
+                            config={"scrollZoom": True},
+                        )
 
