@@ -442,7 +442,7 @@ with tab1:
     with st.expander("Indicator Visualizer", expanded=False):
         gate_listed = viz.gate_pairs()
         top500 = viz.top_500_symbols()
-        available_tokens = [s for s in top500 if f"{s}_USDT" in gate_listed]
+        available_tokens = list(dict.fromkeys(s for s in top500 if f"{s}_USDT" in gate_listed))
         if not available_tokens:
             st.info("Could not load the current top 500.")
         else:
@@ -463,18 +463,18 @@ with tab1:
                 st.info("Select at least one asset to display.")
             else:
                 for i, token in enumerate(selected_tokens):
-                    if i > 0:
-                        st.divider()
-                    st.markdown(f"###### {token}")
-                    df_token = viz.gate_weekly_close(token)
-                    if df_token.empty:
-                        st.warning(f"No Gate.io price history available for {token}.")
-                    else:
-                        fig_viz = _build_viz_figure(df_token, token, params_backtest, selected_panels)
-                        _cL, _cM, _cR = st.columns([1, 4, 1])
-                        with _cM:
+                    col1, col2, col3 = st.columns([1, 5, 1])
+                    with col2:
+                        if i > 0:
+                            st.divider()
+                        st.markdown(f"###### {token}")
+                        df_token = viz.gate_weekly_close(token)
+                        if df_token.empty:
+                            st.warning(f"No Gate.io price history available for {token}.")
+                        else:
+                            fig_viz = _build_viz_figure(df_token, token, params_backtest, selected_panels)
                             st.plotly_chart(
-                                fig_viz, use_container_width=True, key=f"viz_bt_chart_{token}",
+                                fig_viz, use_container_width=True, key=f"viz_bt_chart_{i}_{token}",
                                 config={"scrollZoom": True},
                             )
 
@@ -735,7 +735,7 @@ with tab1:
         )
         gate_listed = viz.gate_pairs()
         top500 = viz.top_500_symbols()
-        available_tokens = [s for s in top500 if f"{s}_USDT" in gate_listed]
+        available_tokens = list(dict.fromkeys(s for s in top500 if f"{s}_USDT" in gate_listed))
         if not available_tokens:
             st.info("Could not load the current top 500 (check CoinMarketCap / Gate.io access).")
         else:
@@ -756,18 +756,18 @@ with tab1:
                 st.info("Select at least one asset to display.")
             else:
                 for i, token in enumerate(selected_tokens):
-                    if i > 0:
-                        st.divider()
-                    st.markdown(f"###### {token}")
-                    df_token = viz.gate_weekly_close(token)
-                    if df_token.empty:
-                        st.warning(f"No Gate.io price history available for {token}.")
-                    else:
-                        fig_viz = _build_viz_figure(df_token, token, params, selected_panels)
-                        _cL, _cM, _cR = st.columns([1, 4, 1])
-                        with _cM:
+                    col1, col2, col3 = st.columns([1, 5, 1])
+                    with col2:
+                        if i > 0:
+                            st.divider()
+                        st.markdown(f"###### {token}")
+                        df_token = viz.gate_weekly_close(token)
+                        if df_token.empty:
+                            st.warning(f"No Gate.io price history available for {token}.")
+                        else:
+                            fig_viz = _build_viz_figure(df_token, token, params, selected_panels)
                             st.plotly_chart(
-                                fig_viz, use_container_width=True, key=f"viz_opt_chart_{token}",
+                                fig_viz, use_container_width=True, key=f"viz_opt_chart_{i}_{token}",
                                 config={"scrollZoom": True},
                             )
 

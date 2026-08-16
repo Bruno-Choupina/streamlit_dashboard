@@ -238,7 +238,7 @@ def build_figure(df_token, token, params, panels, panel_height=240):
 
     # --- Panneau prix -------------------------------------------------------
     fig.add_trace(go.Scatter(x=close.index, y=close.values, mode="lines", name="Close",
-                             line=dict(color=PRICE_COLOR, width=1.5)), row=1, col=1)
+                             line=dict(color=PRICE_COLOR, width=2.5)), row=1, col=1)
 
     buy_dates = close.index[buy_sig.values]
     sell_dates = close.index[sell_sig.values]
