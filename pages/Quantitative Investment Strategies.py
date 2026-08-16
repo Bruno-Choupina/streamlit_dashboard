@@ -462,6 +462,10 @@ with tab1:
             if not selected_tokens:
                 st.info("Select at least one asset to display.")
             else:
+                st.caption(
+                    "Tip: to stretch or flatten a panel, hover its Y-axis (the numbers "
+                    "on the left) and scroll up or down."
+                )
                 for i, token in enumerate(selected_tokens):
                     col1, col2, col3 = st.columns([1, 5, 1])
                     with col2:
@@ -755,6 +759,10 @@ with tab1:
             if not selected_tokens:
                 st.info("Select at least one asset to display.")
             else:
+                st.caption(
+                    "Tip: to stretch or flatten a panel, hover its Y-axis (the numbers "
+                    "on the left) and scroll up or down."
+                )
                 for i, token in enumerate(selected_tokens):
                     col1, col2, col3 = st.columns([1, 5, 1])
                     with col2:

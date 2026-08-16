@@ -10,9 +10,11 @@ Il regroupe TOUT ce qui concerne cette sous-section, en un seul fichier :
   - la construction de la figure Plotly facon TradingView (prix en echelle log
     + fleches de signaux 3/3, panneaux d'indicateurs, crosshair, pan/scroll-zoom).
 
-Panneaux (4) : chaque indicateur est trace en bleu ; les quantiles/seuils sont en
-vert (cote achat / bas) ou rouge (cote vente / haut). Volatilite et RSI ne sont PAS
-dupliques : un seul panneau chacun, avec les deux quantiles superposes.
+Panneaux (5) : chaque indicateur est trace en bleu ; les quantiles/seuils sont en
+vert (cote achat / bas) ou rouge (cote vente / haut). La volatilite a DEUX panneaux
+(achat et vente) car ses fenetres/parametres different -> ce sont deux courbes std
+distinctes. Le RSI est unique (meme courbe) avec son seuil d'achat (vert) et son
+quantile de vente (rouge).
 
 Les indicateurs et parametres sont ceux du backtest, MAIS contrairement a
 signals.signaux_achats, les signaux d'achat ne sont PAS restreints aux dates
@@ -43,7 +45,7 @@ SELL_COLOR = "#d62728"         # rouge (quantile haut / cote vente / signaux de 
 ORANGE = "#ff7f0e"             # orange (moyenne mobile du relative range)
 
 # --- Panneaux d'affichage (Volatilite et RSI fusionnes, non dupliques) ------
-ALL_PANELS = ["Volatility", "Relative Range", "RSI", "ROI"]
+ALL_PANELS = ["Volatility (Buy)", "Volatility (Sell)", "Relative Range", "RSI", "ROI"]
 
 
 # ============================================================================
@@ -158,18 +160,28 @@ def _signals(c):
 
 def _panel_traces(panel, c):
     """Renvoie les traces (serie, nom, couleur) d'un panneau + yrange optionnel."""
-    if panel == "Volatility":
+    if panel == "Volatility (Buy)":
         return dict(traces=[
             (c["vol_qbas"], "Lower Vol. Quantile (buy)", BUY_COLOR),
-            (c["vol_qhaut"], "Upper Vol. Quantile (sell)", SELL_COLOR),
             (c["std_buy"], "Rolling Volatility", INDICATOR_COLOR),
         ])
+    if panel == "Volatility (Sell)":
+        return dict(traces=[
+            (c["vol_qhaut"], "Upper Vol. Quantile (sell)", SELL_COLOR),
+            (c["std_sell"], "Rolling Volatility", INDICATOR_COLOR),
+        ])
     if panel == "Relative Range":
+        # Cadre l'axe Y sur les valeurs DEPUIS 2020 pour ne pas ecraser le present a cause
+        # des vieux pics exageres (pre-2020) ; marge large (x1.4) pour ne pas trop zoomer.
+        # L'axe reste zoomable manuellement (scroll sur l'axe).
+        recent = pd.concat([c["range_raw"].loc["2020-01-01":].dropna(),
+                            c["range_ma"].loc["2020-01-01":].dropna()])
+        yrange = [0, float(recent.max()) * 1.4] if len(recent) and recent.max() > 0 else None
         return dict(traces=[
             (c["range_qbas"], "Lower Range Quantile (buy)", BUY_COLOR),
             (c["range_ma"], "MA Relative Range", ORANGE),
             (c["range_raw"], "Relative Range", INDICATOR_COLOR),
-        ])
+        ], yrange=yrange)
     if panel == "RSI":
         return dict(traces=[
             (c["rsi_seuil"], f"Buy Threshold ({c['seuil']})", BUY_COLOR),
@@ -238,7 +250,7 @@ def build_figure(df_token, token, params, panels, panel_height=240):
 
     # --- Panneau prix -------------------------------------------------------
     fig.add_trace(go.Scatter(x=close.index, y=close.values, mode="lines", name="Close",
-                             line=dict(color=PRICE_COLOR, width=2)), row=1, col=1)
+                             line=dict(color=PRICE_COLOR, width=2.5)), row=1, col=1)
 
     buy_dates = close.index[buy_sig.values]
     sell_dates = close.index[sell_sig.values]
