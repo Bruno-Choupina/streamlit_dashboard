@@ -983,13 +983,6 @@ with tab1:
                             )
 
     with st.expander("Signals Statistics", expanded=False):
-        st.markdown(
-            "Aggregated signal statistics across the assets selected above, computed over "
-            "the last N weeks (set with the slider below). This gives a concrete, "
-            "collective read on the current situation: for instance, if a large share of "
-            "the selection is flashing a 3/3 buy signal right now, that is a strong signal "
-            "that it may be an opportune moment to buy — and conversely for sell signals."
-        )
         if not selected_tokens:
             st.info("Select at least one asset in the Visualizer above to display statistics.")
         else:
