@@ -951,7 +951,7 @@ with tab1:
             col_sel1, col_sel2 = st.columns(2)
             with col_sel1:
                 selected_tokens = st.multiselect(
-                    "Assets (current top 500 by market cap)", options=available_tokens,
+                    "Assets", options=available_tokens,
                     default=default_tokens, key="viz_opt_tokens",
                 )
             with col_sel2:
