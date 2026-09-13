@@ -444,11 +444,11 @@ with tab1:
         camemberts=analysis.camemberts(trades)
 
         col1,col2=st.columns(2)
-        col1.plotly_chart(camemberts["return"])
-        col2.plotly_chart(camemberts["duree"])
-    
+        col1.plotly_chart(camemberts["return"],key="camembert_return_bt")
+        col2.plotly_chart(camemberts["duree"],key="camembert_duree_bt")
+
         col1,col2,col3=st.columns([1,3,1])
-        col2.plotly_chart(camemberts["mdd"])
+        col2.plotly_chart(camemberts["mdd"],key="camembert_mdd_bt")
 
         st.write("")
         st.write("")
@@ -488,7 +488,7 @@ with tab1:
 
         with st.expander("Best Trades",expanded=False):
 
-            nb=st.slider(label="Number of best trades to display",min_value=1,max_value=nb_trades,value=5)
+            nb=st.slider(label="Number of best trades to display",min_value=1,max_value=nb_trades,value=5,key="best_trades_n_bt")
 
             best_tokens=analysis.best_trades(trades,nb)
             dico_liste=analysis.extraire_impaires_paires(best_tokens)
@@ -529,7 +529,7 @@ with tab1:
         with st.expander("Worst Trades",expanded=False):
 
 
-            nb=st.slider(label="Number of worst trades to display",min_value=1,max_value=nb_max,value=5)
+            nb=st.slider(label="Number of worst trades to display",min_value=1,max_value=nb_max,value=5,key="worst_trades_n_bt")
 
             worst_tokens=analysis.worst_trades(trades,nb)
 
@@ -793,11 +793,11 @@ with tab1:
         camemberts=analysis.camemberts(trades)
 
         col1,col2=st.columns(2)
-        col1.plotly_chart(camemberts["return"])
-        col2.plotly_chart(camemberts["duree"])
-        
+        col1.plotly_chart(camemberts["return"],key="camembert_return_opt")
+        col2.plotly_chart(camemberts["duree"],key="camembert_duree_opt")
+
         col1,col2,col3=st.columns([1,3,1])
-        col2.plotly_chart(camemberts["mdd"])
+        col2.plotly_chart(camemberts["mdd"],key="camembert_mdd_opt")
 
 
         st.write("")
@@ -838,7 +838,7 @@ with tab1:
 
     with st.expander("Best Trades",expanded=False):
 
-        nb=st.slider(label="Number of best trades to display",min_value=1,max_value=nb_trades,value=5)
+        nb=st.slider(label="Number of best trades to display",min_value=1,max_value=nb_trades,value=5,key="best_trades_n_opt")
 
         best_tokens=analysis.best_trades(trades,nb)
         dico_liste=analysis.extraire_impaires_paires(best_tokens)
@@ -879,7 +879,7 @@ with tab1:
     with st.expander("Worst Trades",expanded=False):
 
 
-        nb=st.slider(label="Number of worst trades to display",min_value=1,max_value=nb_max,value=5)
+        nb=st.slider(label="Number of worst trades to display",min_value=1,max_value=nb_max,value=5,key="worst_trades_n_opt")
 
         worst_tokens=analysis.worst_trades(trades,nb)
 
@@ -983,6 +983,13 @@ with tab1:
                             )
 
     with st.expander("Signals Statistics", expanded=False):
+        st.markdown(
+            "Aggregated signal statistics across the assets selected above, computed over "
+            "the last N weeks (set with the slider below). This gives a concrete, "
+            "collective read on the current situation: for instance, if a large share of "
+            "the selection is flashing a 3/3 buy signal right now, that is a strong signal "
+            "that it may be an opportune moment to buy — and conversely for sell signals."
+        )
         if not selected_tokens:
             st.info("Select at least one asset in the Visualizer above to display statistics.")
         else:
