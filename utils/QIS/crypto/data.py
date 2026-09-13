@@ -249,8 +249,8 @@ def hist_prix_gate_simple(crypto,timeframe="7d"):
     from datetime import datetime
     from gate_api import Configuration, ApiClient, SpotApi
 
-    API_key = st.secret["GATE_API_KEY"]
-    API_secret = st.secret["GATE_API_SECRET"]
+    API_key = st.secrets["GATE_API_KEY"]
+    API_secret = st.secrets["GATE_API_SECRET"]
 
     config = Configuration(key=API_key, secret=API_secret)
     df_global = pd.DataFrame()

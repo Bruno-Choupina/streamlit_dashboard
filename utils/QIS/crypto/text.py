@@ -51,8 +51,9 @@ This application is organized into four main sections:
 - **Investment Universe** — Select the cryptocurrency universe used for
   the backtest.
 
-- **Backtesting** — Run the strategy, analyze the results, and inspect
-  the generated trades.
+- **Backtesting** — Run the strategy, analyze the results, inspect the
+  generated trades, and visualize indicators and signal statistics across
+  the selected universe.
 
 - **Strategy Optimization** — Compare parameter configurations obtained
   with different optimization objectives.
@@ -365,20 +366,18 @@ MDD=Maximum Drawdown,
 the maximum losing return achieved by a trade during his life
 """
 
-about_indicator_visualizer = """
-This section provides a direct visual illustration of the strategy on a single asset.
-For a chosen cryptocurrency and a given parameter configuration, it plots each indicator
-together with its quantile thresholds, so that one can see concretely how the signals are
-constructed and exactly when a buy or sell condition is met.
+about_visualizer_and_signal_statistics = """
+**Visualizer.** Select one or several assets within a chosen universe and plot each
+indicator together with its quantile thresholds, to see concretely how the signals are
+constructed and exactly when a buy or sell condition is met. The universe can be one of
+the backtest universes described above, or the current top 500 cryptocurrencies by market
+capitalization, with prices refreshed live instead of frozen at 15 July 2026.
 
-It also adds an up-to-date dimension that the preceding analyses lack. Whereas the backtest
-relies on a fixed investment universe whose price history ends on 15 July 2026, this
-visualizer applies the same indicators and signal logic to any chosen asset among the current
-top 500 cryptocurrencies by market capitalization, using prices that are continuously
-refreshed. Because the data remain current, the tool is not confined to historical study.
-At any point in the future, and for any observer, it answers a concrete question: given
-these parameters, does the strategy currently indicate an opportune moment to buy or to sell?
-
+**Signals Statistics.** Gives signal statistics across all the assets selected in the
+Visualizer section above, for any reference date. For instance, it shows the share of
+those assets that had a buy or a sell signal over a chosen number of weeks preceding the
+reference date. This makes it possible to compare the current situation with a past point
+in time, to assess whether now is an opportune moment to buy or sell at the market level.
 """
 
 

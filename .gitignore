@@ -3,6 +3,8 @@
 
 
 .venv/
+utils/QIS/crypto/cache/
+Activate.bat
 
 
 __pycache__/
