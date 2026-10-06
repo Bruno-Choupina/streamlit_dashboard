@@ -608,7 +608,7 @@ The trading strategy itself remains unchanged throughout the
 optimization.
 
 Parameter selection is performed using Bayesian optimization. All
-optimizations were conducted using historical market data available up
+optimizations were conducted on the historical top 200 universe using historical market data available up
 to July 15, 2026, preventing look-ahead bias. Each objective is
 optimized over 500 trials, while configurations generating no trades,
 no closed trades, or covering fewer than 20% of the investment universe
